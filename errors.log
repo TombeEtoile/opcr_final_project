@@ -1,0 +1,19 @@
+ERROR 2024-11-25 09:32:31,408 log Internal Server Error: /
+Traceback (most recent call last):
+  File "/Users/augustinverdier/PycharmProjects/Python-OC-Lettings-FR/venv/lib/python3.12/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/augustinverdier/PycharmProjects/Python-OC-Lettings-FR/venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/augustinverdier/PycharmProjects/Python-OC-Lettings-FR/venv/lib/python3.12/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/augustinverdier/PycharmProjects/Python-OC-Lettings-FR/venv/lib/python3.12/site-packages/sentry_sdk/integrations/django/views.py", line 94, in sentry_wrapped_callback
+    return callback(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/augustinverdier/PycharmProjects/Python-OC-Lettings-FR/oc_lettings_site/views.py", line 24, in index
+    result = 1 / 0
+             ~~^~~
+ZeroDivisionError: division by zero
+ERROR 2024-11-25 09:32:31,456 basehttp "GET / HTTP/1.1" 500 69964

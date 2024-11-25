@@ -1,6 +1,21 @@
 import os
-
 from pathlib import Path
+from django.contrib import staticfiles
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
+sentry_sdk.init(
+    dsn="https://c64cee1b51cb15ff539e5908481860e2@o4508177342726144.ingest.de.sentry.io/4508358099927120",
+    traces_sample_rate=1.0,  # Définit le pourcentage de transactions à 100% pour suivre l’analyse des performances
+    integrations=[DjangoIntegration()],  # Active l'intégration avec Django pour capturer les erreurs
+    send_default_pii=True,  # Permet d'envoyer des info user (ID de session, e-mail, ...) pour un meilleur diagnostic.
+    _experiments={
+        # Set continuous_profiling_auto_start to True
+        # to automatically start the profiler on when
+        # possible.
+        "continuous_profiling_auto_start": True,
+    },
+)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -13,15 +28,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'fp$9^593hsriajg$_%=5trot9g!1qa@ew(o-1#@=&4%=hp46(s'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG = False
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
 
 INSTALLED_APPS = [
     'oc_lettings_site.apps.OCLettingsSiteConfig',
+    'lettings',
+    'profiles',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -111,4 +129,48 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "static",]
+STATICFILES_DIRS = [BASE_DIR / "static", ]
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,  # Garde les loggers par défaut de Django
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',  # Affiche les messages DEBUG et supérieurs dans la console
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',  # Utilise le format simple
+        },
+        'file': {
+            'level': 'ERROR',  # Enregistre uniquement les erreurs dans un fichier
+            'class': 'logging.FileHandler',
+            'filename': 'errors.log',  # Nom du fichier log
+            'formatter': 'verbose',  # Utilise le format détaillé
+        },
+        'sentry': {
+            'level': 'ERROR',  # Envoie uniquement les erreurs à Sentry
+            'class': 'sentry_sdk.integrations.logging.EventHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file', 'sentry'],  # Envoie les logs à la console, au fichier, et à Sentry
+            'level': 'INFO',  # Définit le niveau minimal pour Django
+            'propagate': True,  # Propagation des logs vers d'autres loggers
+        },
+        'my_app': {
+            'handlers': ['console', 'file'],  # Logs spécifiques à une application
+            'level': 'DEBUG',  # Affiche tous les logs de l'application
+        },
+    },
+}
